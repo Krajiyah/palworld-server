@@ -33,7 +33,7 @@ resource "aws_launch_template" "palworld" {
 
     spot_options {
       max_price          = var.spot_price_max
-      spot_instance_type = "persistent"
+      spot_instance_type = "one-time"  # ASG requires one-time Spot instances
       instance_interruption_behavior = "terminate"
     }
   }
@@ -50,8 +50,8 @@ resource "aws_launch_template" "palworld" {
     }
   }
 
-  # User data script - will be created separately
-  user_data = base64encode(templatefile("${path.module}/user-data.sh", {
+  # User data script - gzip compressed to fit within 16KB limit
+  user_data = base64gzip(templatefile("${path.module}/user-data.sh", {
     region                  = var.aws_region
     project_name            = var.project_name
     eip_allocation_id       = aws_eip.palworld.id

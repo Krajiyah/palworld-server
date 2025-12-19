@@ -47,18 +47,14 @@ resource "aws_s3_bucket_lifecycle_configuration" "backups" {
     id     = "cleanup-old-backups"
     status = "Enabled"
 
+    filter {}
+
     # Keep daily backups for 7 days
     expiration {
       days = 7
     }
 
-    # Move older versions to cheaper storage
-    noncurrent_version_transition {
-      noncurrent_days = 3
-      storage_class   = "STANDARD_IA"
-    }
-
-    # Delete old versions after 14 days
+    # Delete old versions after 14 days (no transition needed for short retention)
     noncurrent_version_expiration {
       noncurrent_days = 14
     }

@@ -2,6 +2,34 @@
 
 Complete production-ready infrastructure for deploying a Palworld dedicated server on AWS using Terraform with Spot instances, auto-generated passwords, persistent storage, and automated backups.
 
+## 🎮 Quick Access
+
+**Game Server (Connect in Palworld):**
+```
+IP: 54.153.62.79:8211
+```
+
+**Dashboard (Monitor Server):**
+```
+http://54.153.62.79
+```
+
+**SSH Access:**
+```bash
+ssh -i palworld-server-key.pem ubuntu@54.153.62.79
+```
+
+**Get Passwords:**
+```bash
+# Server password (give to players):
+terraform output -raw server_password
+
+# Admin password (keep secret):
+terraform output -raw admin_password
+```
+
+---
+
 ## Table of Contents
 
 - [Features](#features)

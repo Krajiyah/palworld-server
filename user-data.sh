@@ -24,14 +24,30 @@ BACKUP_CRON="${backup_cron_schedule}"
 ENABLE_DASHBOARD="${enable_dashboard}"
 
 MOUNT_POINT="/mnt/palworld-data"
-DEVICE_NAME="/dev/xvdf"
 
-# Get instance metadata
-INSTANCE_ID=$(ec2-metadata --instance-id | cut -d " " -f 2)
-AVAILABILITY_ZONE=$(ec2-metadata --availability-zone | cut -d " " -f 2)
+# Get instance metadata using IMDSv2
+TOKEN=$(curl -X PUT "http://169.254.169.254/latest/api/token" -H "X-aws-ec2-metadata-token-ttl-seconds: 21600" 2>/dev/null)
+INSTANCE_ID=$(curl -H "X-aws-ec2-metadata-token: $TOKEN" http://169.254.169.254/latest/meta-data/instance-id 2>/dev/null)
+AVAILABILITY_ZONE=$(curl -H "X-aws-ec2-metadata-token: $TOKEN" http://169.254.169.254/latest/meta-data/placement/availability-zone 2>/dev/null)
 
 echo "Instance ID: $INSTANCE_ID"
 echo "AZ: $AVAILABILITY_ZONE"
+
+# Auto-detect EBS volume device name (handles both /dev/xvdf and NVMe naming)
+# For NVMe instances, /dev/xvdf appears as /dev/nvme1n1
+# Wait for the volume to appear and auto-detect its name
+DEVICE_NAME=""
+for possible_device in /dev/xvdf /dev/nvme1n1 /dev/nvme2n1; do
+    if [ -e "$possible_device" ]; then
+        DEVICE_NAME="$possible_device"
+        break
+    fi
+done
+
+if [ -z "$DEVICE_NAME" ]; then
+    echo "Device not found yet, will wait..."
+    DEVICE_NAME="/dev/nvme1n1"  # Default for NVMe instances
+fi
 
 # Update system
 echo "Updating system packages..."
@@ -213,8 +229,8 @@ cat > /opt/aws/amazon-cloudwatch-agent/etc/config.json <<EOF
       }
     },
     "append_dimensions": {
-      "AutoScalingGroupName": "\${aws:AutoScalingGroupName}",
-      "InstanceId": "\${aws:InstanceId}"
+      "AutoScalingGroupName": "$${aws:AutoScalingGroupName}",
+      "InstanceId": "$${aws:InstanceId}"
     }
   }
 }

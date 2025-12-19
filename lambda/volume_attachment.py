@@ -25,6 +25,11 @@ def lambda_handler(event, context):
         # Parse SNS message
         message = json.loads(event['Records'][0]['Sns']['Message'])
 
+        # Skip test notifications
+        if message.get('Event') == 'autoscaling:TEST_NOTIFICATION':
+            logger.info("Received test notification, skipping...")
+            return {'statusCode': 200, 'body': 'Test notification'}
+
         instance_id = message['EC2InstanceId']
         lifecycle_hook_name = message['LifecycleHookName']
         auto_scaling_group_name = message['AutoScalingGroupName']
