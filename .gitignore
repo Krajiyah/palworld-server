@@ -1,0 +1,34 @@
+# Terraform files
+.terraform/
+*.tfstate
+*.tfstate.backup
+*.tfstate.lock.info
+*.tfvars
+# Keep .terraform.lock.hcl - should be committed for provider version consistency
+
+# AWS credentials - NEVER COMMIT
+.env
+*.pem
+*.ppk
+
+# Lambda deployment packages
+lambda/*.zip
+
+# Logs
+*.log
+user-data.log
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Backup files
+backups/
+*.backup

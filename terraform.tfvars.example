@@ -1,0 +1,22 @@
+# Example Terraform variables file
+# Copy this to terraform.tfvars and customize
+
+# AWS region (must match .env AWS_REGION)
+aws_region = "us-west-1"
+
+# Server configuration
+palworld_server_name = "My Epic Palworld Server"
+palworld_max_players = 16
+
+# Optional: Restrict SSH to your current IP (auto-detected)
+# Highly recommended for production!
+# restrict_ssh_to_current_ip = true
+
+# Optional: Customize backup schedule (cron format)
+# backup_cron_schedule = "0 */6 * * *"  # Every 6 hours
+
+# Optional: Disable dashboard
+# enable_dashboard = false
+
+# Optional: Set maximum Spot price
+# spot_price_max = "0.10"  # Default is $0.10/hr (~60% discount)
