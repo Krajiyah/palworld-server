@@ -98,3 +98,13 @@ output "ssh_access_info" {
     note        = "SSH open to the internet - consider enabling restrict_ssh_to_current_ip"
   }
 }
+
+output "palworld_settings_hash" {
+  description = "MD5 hash of the current PalWorldSettings.ini (changes trigger server sync)"
+  value       = local_file.palworld_settings.content_md5
+}
+
+output "palworld_base_camp_max_num_in_guild" {
+  description = "Current max bases per guild setting"
+  value       = var.palworld_base_camp_max_num_in_guild
+}

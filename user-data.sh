@@ -236,12 +236,12 @@ cat > /opt/aws/amazon-cloudwatch-agent/etc/config.json <<EOF
 }
 EOF
 
-# Start CloudWatch Agent
+# Start CloudWatch Agent (non-fatal if config validation fails)
 /opt/aws/amazon-cloudwatch-agent/bin/amazon-cloudwatch-agent-ctl \
     -a fetch-config \
     -m ec2 \
     -s \
-    -c file:/opt/aws/amazon-cloudwatch-agent/etc/config.json
+    -c file:/opt/aws/amazon-cloudwatch-agent/etc/config.json || echo "WARNING: CloudWatch Agent failed to start (non-fatal)"
 
 # Create backup script
 cat > /usr/local/bin/backup-palworld.sh <<'BACKUP_SCRIPT'
@@ -372,7 +372,7 @@ Description=Palworld Metrics Update
 
 [Service]
 Type=oneshot
-ExecStart=/usr/local/bin/palworld-metrics.sh > /tmp/palworld-metrics.json
+ExecStart=/bin/bash -c '/usr/local/bin/palworld-metrics.sh > /tmp/palworld-metrics.json'
 EOF
 
     cat > /etc/systemd/system/palworld-metrics.timer <<EOF
